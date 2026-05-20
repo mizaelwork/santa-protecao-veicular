@@ -1,0 +1,161 @@
+/* ============================================================
+   SANTA PROTEÇÃO VEICULAR — main.js
+   ============================================================ */
+
+// WhatsApp Number — troque pelo número real
+const WA_NUMBER = '5500000000000';
+const WA_MSG = encodeURIComponent('Olá! Gostaria de simular uma proteção veicular. Pode me ajudar?');
+const WA_URL = `https://wa.me/${WA_NUMBER}?text=${WA_MSG}`;
+
+// Inject WhatsApp href into all WA links
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-wa]').forEach(el => {
+    el.setAttribute('href', WA_URL);
+    el.setAttribute('target', '_blank');
+    el.setAttribute('rel', 'noopener noreferrer');
+  });
+});
+
+/* ---------- NAVBAR ---------- */
+const navbar = document.getElementById('navbar');
+const hamburger = document.getElementById('hamburger');
+const navLinks = document.getElementById('navLinks');
+
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+hamburger?.addEventListener('click', () => {
+  navLinks.classList.toggle('open');
+  hamburger.classList.toggle('active');
+});
+
+// Close nav on link click
+navLinks?.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    hamburger.classList.remove('active');
+  });
+});
+
+/* ---------- SCROLL REVEAL ---------- */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, entry.target.dataset.delay || 0);
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.reveal').forEach((el, i) => {
+  el.dataset.delay = (i % 4) * 80;
+  revealObserver.observe(el);
+});
+
+/* ---------- COUNTER ANIMATION ---------- */
+function animateCounter(el) {
+  const target = parseFloat(el.dataset.target);
+  const suffix = el.dataset.suffix || '';
+  const prefix = el.dataset.prefix || '';
+  const duration = 1800;
+  const start = performance.now();
+
+  function update(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(ease * target);
+    el.textContent = prefix + current.toLocaleString('pt-BR') + suffix;
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      animateCounter(entry.target);
+      counterObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('[data-target]').forEach(el => {
+  counterObserver.observe(el);
+});
+
+/* ---------- TESTIMONIALS CAROUSEL ---------- */
+const track = document.getElementById('testimonialsTrack');
+const dots = document.querySelectorAll('.carousel-dot');
+const prevBtn = document.getElementById('carouselPrev');
+const nextBtn = document.getElementById('carouselNext');
+
+let currentSlide = 0;
+const totalSlides = document.querySelectorAll('.testimonial-slide').length;
+
+function goToSlide(index) {
+  currentSlide = (index + totalSlides) % totalSlides;
+  if (track) track.style.transform = `translateX(-${currentSlide * 100}%)`;
+  dots.forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+}
+
+prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
+nextBtn?.addEventListener('click', () => goToSlide(currentSlide + 1));
+dots.forEach((d, i) => d.addEventListener('click', () => goToSlide(i)));
+
+// Auto-play
+let autoPlay = setInterval(() => goToSlide(currentSlide + 1), 6000);
+
+track?.parentElement?.addEventListener('mouseenter', () => clearInterval(autoPlay));
+track?.parentElement?.addEventListener('mouseleave', () => {
+  autoPlay = setInterval(() => goToSlide(currentSlide + 1), 6000);
+});
+
+// Touch swipe
+let touchStartX = 0;
+track?.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+track?.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) goToSlide(currentSlide + (diff > 0 ? 1 : -1));
+});
+
+/* ---------- FAQ ACCORDION ---------- */
+document.querySelectorAll('.faq-item').forEach(item => {
+  const question = item.querySelector('.faq-question');
+  question?.addEventListener('click', () => {
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    // Open clicked (if was closed)
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+/* ---------- SMOOTH ANCHOR SCROLL ---------- */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', e => {
+    const target = document.querySelector(anchor.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      const offset = 80;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  });
+});
+
+/* ---------- WHATSAPP TOOLTIP ---------- */
+const wpTooltip = document.getElementById('wpTooltip');
+let tooltipTimeout;
+
+if (wpTooltip) {
+  // Show after 3 seconds
+  tooltipTimeout = setTimeout(() => {
+    wpTooltip.style.display = 'block';
+    // Hide after 5 seconds
+    setTimeout(() => { wpTooltip.style.display = 'none'; }, 5000);
+  }, 3000);
+}
