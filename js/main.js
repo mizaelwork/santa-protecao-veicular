@@ -2,10 +2,7 @@
    SANTA PROTEÇÃO VEICULAR — main.js
    ============================================================ */
 
-// WhatsApp Number — troque pelo número real
-const WA_NUMBER = '5500000000000';
-const WA_MSG = encodeURIComponent('Olá! Gostaria de simular uma proteção veicular. Pode me ajudar?');
-const WA_URL = `https://wa.me/${WA_NUMBER}?text=${WA_MSG}`;
+const WA_URL = 'https://wa.me/message/2646JJ3SWJWMH1';
 
 // Inject WhatsApp href into all WA links
 document.addEventListener('DOMContentLoaded', () => {
