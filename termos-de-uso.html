@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Termos de Uso — Santa Proteção Veicular. Condições gerais de uso dos serviços e canais digitais." />
+  <title>Termos de Uso — Santa Proteção Veicular</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .policy-page { padding: 120px 0 80px; min-height: 100vh; }
+    .policy-card {
+      background: var(--dark2);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: var(--radius);
+      padding: 48px;
+      margin-bottom: 0;
+    }
+    .policy-card h1 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+    .policy-meta {
+      font-size: 0.82rem;
+      color: var(--gray);
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .policy-toc {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+    .policy-toc h4 {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--gray);
+      margin-bottom: 12px;
+    }
+    .policy-toc ol {
+      padding-left: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 24px;
+    }
+    .policy-toc ol li { font-size: 0.88rem; }
+    .policy-toc ol li a { color: var(--red-light); font-weight: 500; text-decoration: none; }
+    .policy-toc ol li a:hover { text-decoration: underline; }
+    .policy-section { margin-bottom: 36px; }
+    .policy-section h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 14px;
+      padding-left: 14px;
+      border-left: 3px solid var(--red);
+    }
+    .policy-section p {
+      font-size: 0.92rem;
+      color: var(--gray);
+      line-height: 1.85;
+      margin-bottom: 12px;
+    }
+    .policy-section ul {
+      list-style: disc;
+      padding-left: 24px;
+      margin-bottom: 12px;
+    }
+    .policy-section ul li {
+      font-size: 0.92rem;
+      color: var(--gray);
+      line-height: 1.85;
+      margin-bottom: 4px;
+    }
+    .policy-section ul li strong { color: var(--off-white); }
+    .policy-section a { color: var(--red-light); }
+    .policy-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin: 32px 0;
+    }
+    .policy-contact-box {
+      background: rgba(212,0,0,0.08);
+      border: 1px solid rgba(212,0,0,0.2);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-top: 16px;
+    }
+    .policy-contact-box p { margin-bottom: 6px; }
+    @media (max-width: 768px) {
+      .policy-card { padding: 28px 20px; }
+      .policy-card h1 { font-size: 1.5rem; }
+      .policy-toc ol { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar" role="navigation" aria-label="Menu principal">
+    <div class="container">
+      <a href="index.html" class="nav-logo" aria-label="Santa Proteção Veicular - Início">
+        <div class="nav-logo-icon" aria-hidden="true">🛡️</div>
+        <div class="nav-logo-text">
+          <span>Santa</span>
+          <span>Proteção Veicular</span>
+        </div>
+      </a>
+
+      <ul class="nav-links" id="navLinks" role="list">
+        <li><a href="index.html#beneficios">Proteções</a></li>
+        <li><a href="index.html#depoimentos">Depoimentos</a></li>
+        <li><a href="index.html#quem-somos">Sobre Nós</a></li>
+        <li><a href="index.html#faq">FAQ</a></li>
+        <li>
+          <a href="#" data-wa class="nav-cta">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.554 4.103 1.523 5.83L.057 23.57a.5.5 0 0 0 .609.61l5.788-1.484A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.803 9.803 0 0 1-4.993-1.366l-.358-.213-3.715.952.983-3.617-.233-.373A9.789 9.789 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/></svg>
+            Falar no WhatsApp
+          </a>
+        </li>
+      </ul>
+
+      <button class="nav-hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- CONTEÚDO -->
+  <section class="policy-page">
+    <div class="container">
+      <div class="policy-card">
+
+        <h1>Termos de Uso</h1>
+        <div class="policy-meta">
+          Última atualização: 20 de maio de 2025 &nbsp;·&nbsp; CNPJ: 44.571.480/0001-16
+        </div>
+
+        <!-- ÍNDICE -->
+        <div class="policy-toc">
+          <h4>Índice</h4>
+          <ol>
+            <li><a href="#aceitacao">Aceitação dos Termos</a></li>
+            <li><a href="#identificacao">Identificação do Prestador</a></li>
+            <li><a href="#servicos">Serviços Oferecidos</a></li>
+            <li><a href="#whatsapp">Uso do WhatsApp e API Meta</a></li>
+            <li><a href="#obrigacoes">Obrigações do Usuário</a></li>
+            <li><a href="#propriedade">Propriedade Intelectual</a></li>
+            <li><a href="#limitacao">Limitação de Responsabilidade</a></li>
+            <li><a href="#vigencia">Vigência e Rescisão</a></li>
+            <li><a href="#legislacao">Legislação e Foro</a></li>
+            <li><a href="#contato">Contato</a></li>
+          </ol>
+        </div>
+
+        <!-- 1 -->
+        <div class="policy-section" id="aceitacao">
+          <h2>1. Aceitação dos Termos</h2>
+          <p>
+            Ao utilizar os serviços, canais de atendimento e plataformas digitais de
+            <strong style="color:var(--off-white)">Mizael dos Anjos</strong> (MEI, CNPJ 44.571.480/0001-16),
+            incluindo o atendimento via WhatsApp relacionado à Santa Proteção Veicular, você declara ter
+            lido, compreendido e concordado integralmente com estes Termos de Uso.
+          </p>
+          <p>Caso não concorde com qualquer disposição, solicitamos que não utilize nossos serviços ou canais de comunicação.</p>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 2 -->
+        <div class="policy-section" id="identificacao">
+          <h2>2. Identificação do Prestador</h2>
+          <div class="policy-contact-box">
+            <p><strong style="color:var(--white)">Titular:</strong> <span style="color:var(--gray)">Mizael dos Anjos</span></p>
+            <p><strong style="color:var(--white)">CNPJ:</strong> <span style="color:var(--gray)">44.571.480/0001-16</span></p>
+            <p><strong style="color:var(--white)">Razão Social:</strong> <span style="color:var(--gray)">44.571.480 MIZAEL DOS ANJOS</span></p>
+            <p><strong style="color:var(--white)">Porte:</strong> <span style="color:var(--gray)">Microempreendedor Individual (MEI)</span></p>
+            <p><strong style="color:var(--white)">Situação:</strong> <span style="color:var(--gray)">ATIVA desde 13/12/2021</span></p>
+            <p><strong style="color:var(--white)">Endereço:</strong> <span style="color:var(--gray)">Rua Diogo de Botelho, 299, APT 202 — Barra do Aririu, Palhoça — SC, CEP 88134-434</span></p>
+            <p><strong style="color:var(--white)">E-mail:</strong> <a href="mailto:businessmizael@gmail.com">businessmizael@gmail.com</a></p>
+            <p><strong style="color:var(--white)">Telefone:</strong> <span style="color:var(--gray)">(48) 99698-6794</span></p>
+          </div>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 3 -->
+        <div class="policy-section" id="servicos">
+          <h2>3. Serviços Oferecidos</h2>
+          <p>Os serviços incluem, mas não se limitam a:</p>
+          <ul>
+            <li>Consultoria, intermediação e comercialização de planos de proteção veicular;</li>
+            <li>Captação e cadastramento de associados para a Santa Proteção Veicular;</li>
+            <li>Atendimento ao cliente via WhatsApp, e-mail e redes sociais;</li>
+            <li>Suporte e orientação durante o processo de adesão e acionamento de sinistros;</li>
+            <li>Outros serviços correlatos conforme descrito em proposta ou contrato específico.</li>
+          </ul>
+          <p>Os detalhes, condições e valores de cada serviço serão apresentados individualmente antes da contratação.</p>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 4 -->
+        <div class="policy-section" id="whatsapp">
+          <h2>4. Uso do WhatsApp Business e API da Meta</h2>
+          <p>
+            Utilizamos a plataforma WhatsApp Business e a API Oficial da Meta para atendimento ao cliente,
+            envio de informações e comunicações relacionadas aos nossos serviços.
+          </p>
+          <p>Ao nos contatar via WhatsApp, você consente com:</p>
+          <ul>
+            <li>O recebimento de mensagens relacionadas ao serviço solicitado;</li>
+            <li>O tratamento dos seus dados conforme nossa <a href="politica-de-privacidade.html">Política de Privacidade</a>;</li>
+            <li>O registro das conversas para fins de qualidade e suporte;</li>
+            <li>Os <a href="https://www.whatsapp.com/legal/terms-of-service" target="_blank" rel="noopener">Termos do WhatsApp</a> e a <a href="https://www.whatsapp.com/legal/privacy-policy" target="_blank" rel="noopener">Política de Privacidade da Meta</a>.</li>
+          </ul>
+          <p>
+            Não utilizamos a plataforma para envio de spam. O contato é iniciado mediante interesse
+            do próprio usuário ou com consentimento prévio. Você pode solicitar a exclusão dos seus dados
+            a qualquer momento por qualquer canal de contato disponível.
+          </p>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 5 -->
+        <div class="policy-section" id="obrigacoes">
+          <h2>5. Obrigações do Usuário</h2>
+          <p>Ao utilizar nossos serviços e canais de comunicação, você se compromete a:</p>
+          <ul>
+            <li>Fornecer informações verdadeiras, precisas e atualizadas;</li>
+            <li>Não utilizar os canais para fins ilícitos, abusivos ou fraudulentos;</li>
+            <li>Não enviar conteúdo ofensivo ou que viole direitos de terceiros;</li>
+            <li>Respeitar os limites e condições dos serviços oferecidos;</li>
+            <li>Comunicar imediatamente qualquer irregularidade identificada.</li>
+          </ul>
+          <p>O descumprimento pode resultar na suspensão do atendimento, sem prejuízo das medidas legais cabíveis.</p>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 6 -->
+        <div class="policy-section" id="propriedade">
+          <h2>6. Propriedade Intelectual</h2>
+          <p>
+            Todo o conteúdo produzido por Mizael dos Anjos — incluindo textos, imagens, logotipos e
+            materiais de marketing — é de propriedade exclusiva do titular ou utilizado com as devidas
+            licenças e autorizações.
+          </p>
+          <p>É vedada a reprodução, distribuição ou uso comercial de qualquer material sem autorização prévia e expressa por escrito.</p>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 7 -->
+        <div class="policy-section" id="limitacao">
+          <h2>7. Limitação de Responsabilidade</h2>
+          <p>
+            Mizael dos Anjos atua como intermediador e consultor na comercialização de serviços de
+            proteção veicular. As condições específicas de cobertura, sinistros e reembolsos são de
+            responsabilidade da Santa Proteção Veicular, conforme seu regulamento interno.
+          </p>
+          <p>Não nos responsabilizamos por:</p>
+          <ul>
+            <li>Falhas nos serviços da associação, prestadores de guincho ou oficinas parceiras;</li>
+            <li>Interrupções nos canais da Meta (WhatsApp, Instagram, Facebook);</li>
+            <li>Danos decorrentes do uso inadequado das informações fornecidas pelo usuário;</li>
+            <li>Decisões tomadas com base em informações incompletas fornecidas pelo próprio usuário.</li>
+          </ul>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 8 -->
+        <div class="policy-section" id="vigencia">
+          <h2>8. Vigência e Rescisão</h2>
+          <p>
+            Estes Termos entram em vigor a partir do momento em que o usuário utiliza nossos serviços
+            e permanecem válidos enquanto durar essa relação. Qualquer das partes pode encerrar a relação
+            a qualquer momento, respeitando os compromissos já assumidos.
+          </p>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 9 -->
+        <div class="policy-section" id="legislacao">
+          <h2>9. Legislação Aplicável e Foro</h2>
+          <p>
+            Estes Termos são regidos pelas leis da República Federativa do Brasil, em especial pelo
+            <strong style="color:var(--off-white)">Código Civil (Lei nº 10.406/2002)</strong>,
+            pelo <strong style="color:var(--off-white)">Código de Defesa do Consumidor (Lei nº 8.078/1990)</strong>
+            e pela <strong style="color:var(--off-white)">LGPD (Lei nº 13.709/2018)</strong>.
+          </p>
+          <p>
+            Para resolução de litígios, fica eleito o foro da comarca de
+            <strong style="color:var(--off-white)">Palhoça — Santa Catarina</strong>,
+            com renúncia expressa a qualquer outro.
+          </p>
+        </div>
+
+        <hr class="policy-divider" />
+
+        <!-- 10 -->
+        <div class="policy-section" id="contato">
+          <h2>10. Contato</h2>
+          <p>Para dúvidas, sugestões ou reclamações sobre estes Termos:</p>
+          <div class="policy-contact-box">
+            <p><strong style="color:var(--white)">Responsável:</strong> <span style="color:var(--gray)">Mizael dos Anjos</span></p>
+            <p><strong style="color:var(--white)">CNPJ:</strong> <span style="color:var(--gray)">44.571.480/0001-16</span></p>
+            <p><strong style="color:var(--white)">E-mail:</strong> <a href="mailto:businessmizael@gmail.com">businessmizael@gmail.com</a></p>
+            <p><strong style="color:var(--white)">Telefone:</strong> <span style="color:var(--gray)">(48) 99698-6794</span></p>
+            <p><strong style="color:var(--white)">Endereço:</strong> <span style="color:var(--gray)">Rua Diogo de Botelho, 299, APT 202 — Barra do Aririu, Palhoça — SC, CEP 88134-434</span></p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+
+        <div class="footer-brand">
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+            <span style="font-size:1.8rem;" aria-hidden="true">🛡️</span>
+            <div>
+              <div style="font-weight:800; font-size:1.1rem;">Santa</div>
+              <div style="font-size:0.65rem; color:var(--red-light); font-weight:600; letter-spacing:0.1em; text-transform:uppercase;">Proteção Veicular</div>
+            </div>
+          </div>
+          <p>Protegemos o seu patrimônio com transparência, agilidade e o atendimento humano que você merece.</p>
+          <div class="footer-socials" role="list" aria-label="Redes sociais">
+            <a href="#" class="social-btn" role="listitem" aria-label="Instagram">📸</a>
+            <a href="#" data-wa class="social-btn" role="listitem" aria-label="WhatsApp">💬</a>
+            <a href="#" class="social-btn" role="listitem" aria-label="Facebook">📘</a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navegação</h4>
+          <nav class="footer-links" aria-label="Links do rodapé">
+            <a href="index.html">Início</a>
+            <a href="index.html#beneficios">Proteções</a>
+            <a href="index.html#depoimentos">Depoimentos</a>
+            <a href="index.html#quem-somos">Sobre Nós</a>
+            <a href="index.html#faq">Perguntas Frequentes</a>
+          </nav>
+        </div>
+
+        <div class="footer-col">
+          <h4>Contato</h4>
+          <div class="footer-contact-item">
+            <span class="icon" aria-hidden="true">💬</span>
+            <div>
+              <div style="font-weight:600; font-size:0.88rem; color:var(--white);">WhatsApp</div>
+              <a href="https://wa.me/5548996986794" data-wa style="color:var(--gray); font-size:0.83rem;">(48) 99698-6794</a>
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon" aria-hidden="true">📧</span>
+            <div>
+              <div style="font-weight:600; font-size:0.88rem; color:var(--white);">E-mail</div>
+              <a href="mailto:businessmizael@gmail.com" style="color:var(--gray); font-size:0.83rem;">businessmizael@gmail.com</a>
+            </div>
+          </div>
+          <div class="footer-contact-item">
+            <span class="icon" aria-hidden="true">📍</span>
+            <div>
+              <div style="font-weight:600; font-size:0.88rem; color:var(--white);">Endereço</div>
+              <span style="color:var(--gray); font-size:0.83rem;">Rua Diogo de Botelho, 299 — APT 202<br>Palhoça — SC, CEP 88134-434</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-bottom-left">
+          <strong>Mizael dos Anjos</strong> — CNPJ: 44.571.480/0001-16 — Razão Social: 44.571.480 MIZAEL DOS ANJOS<br />
+          <a href="politica-de-privacidade.html" style="color:var(--gray); text-decoration:underline;">Política de Privacidade</a> &nbsp;·&nbsp;
+          <a href="termos-de-uso.html" style="color:var(--gray); text-decoration:underline;">Termos de Uso</a><br />
+          <span style="font-size:0.75rem; opacity:0.6;">
+            A Santa Proteção Veicular é uma associação de mútua proteção, regulamentada pelo Código Civil Brasileiro. Não se trata de seguro regulado pela SUSEP.
+          </span>
+        </div>
+        <div class="footer-seals" role="list" aria-label="Selos de segurança">
+          <div class="seal" role="listitem">🔒 Site Seguro</div>
+          <div class="seal" role="listitem">📋 LGPD</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WhatsApp flutuante -->
+  <a href="#" data-wa class="whatsapp-float" aria-label="Falar no WhatsApp">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.554 4.103 1.523 5.83L.057 23.57a.5.5 0 0 0 .609.61l5.788-1.484A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.803 9.803 0 0 1-4.993-1.366l-.358-.213-3.715.952.983-3.617-.233-.373A9.789 9.789 0 0 1 2.182 12C2.182 6.57 6.57 2.182 12 2.182 17.43 2.182 21.818 6.57 21.818 12c0 5.43-4.388 9.818-9.818 9.818z"/></svg>
+  </a>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
