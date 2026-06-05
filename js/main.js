@@ -4,6 +4,10 @@
 
 const WA_URL = 'https://wa.me/message/2646JJ3SWJWMH1';
 
+// Endpoint da API de Conversões (CAPI) hospedado no painel Gestão Comercial.
+// Site estático não tem backend, por isso o evento de servidor é enviado cross-origin.
+const CAPI_ENDPOINT = 'https://gestao.angelcode.shop/api/capi';
+
 // Inject WhatsApp href into all WA links
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-wa]').forEach(el => {
@@ -29,7 +33,7 @@ function trackLead() {
 
   // Lado servidor (CAPI) — não bloqueia a navegação para o WhatsApp
   try {
-    fetch('/api/capi', {
+    fetch(CAPI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
@@ -86,6 +90,27 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll('.reveal').forEach((el, i) => {
   el.dataset.delay = (i % 4) * 80;
   revealObserver.observe(el);
+});
+
+/* ---------- META: VIEWCONTENT (seções de interesse) ---------- */
+// Dispara ViewContent uma única vez por seção quando o visitante rola até
+// as áreas de maior intenção (Proteções/benefícios e Comparativo).
+const vcSeen = new Set();
+const vcObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !vcSeen.has(entry.target.id)) {
+      vcSeen.add(entry.target.id);
+      if (typeof fbq === 'function') {
+        fbq('track', 'ViewContent', { content_name: entry.target.id });
+      }
+      vcObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.4 });
+
+['beneficios', 'comparacao'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) vcObserver.observe(el);
 });
 
 /* ---------- COUNTER ANIMATION ---------- */
