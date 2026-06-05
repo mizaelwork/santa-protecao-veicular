@@ -2,7 +2,9 @@
    SANTA PROTEÇÃO VEICULAR — main.js
    ============================================================ */
 
-const WA_URL = 'https://wa.me/554888533236?text=Ol%C3%A1%2C%20vim%20atrav%C3%A9s%20do%20link%20e%20gostaria%20de%20saber%20mais...';
+// Texto pré-preenchido identifica o canal "site" para rastreamento de origem no painel
+// (detectado por "vim pelo site" em lead-origem.ts do Gestão Comercial).
+const WA_URL = 'https://wa.me/554888533236?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Santa%20e%20gostaria%20de%20saber%20mais%20sobre%20prote%C3%A7%C3%A3o%20veicular.';
 
 // Endpoint da API de Conversões (CAPI) hospedado no painel Gestão Comercial.
 // Site estático não tem backend, por isso o evento de servidor é enviado cross-origin.
