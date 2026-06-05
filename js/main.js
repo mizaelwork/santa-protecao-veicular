@@ -2,7 +2,7 @@
    SANTA PROTEÇÃO VEICULAR — main.js
    ============================================================ */
 
-const WA_URL = 'https://wa.me/message/2646JJ3SWJWMH1';
+const WA_URL = 'https://wa.me/554888533236';
 
 // Endpoint da API de Conversões (CAPI) hospedado no painel Gestão Comercial.
 // Site estático não tem backend, por isso o evento de servidor é enviado cross-origin.
