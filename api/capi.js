@@ -17,9 +17,11 @@
 
 const GRAPH_VERSION = 'v21.0';
 
-const PIXEL_ID = process.env.META_PIXEL_ID || '2460445414378839';
-const ACCESS_TOKEN = process.env.META_CAPI_TOKEN;
-const TEST_EVENT_CODE = process.env.META_TEST_EVENT_CODE;
+// .trim() defensivo: evita falha quando a variável é colada com
+// espaço ou quebra de linha no final (erro comum no painel do Vercel).
+const PIXEL_ID = (process.env.META_PIXEL_ID || '2460445414378839').trim();
+const ACCESS_TOKEN = (process.env.META_CAPI_TOKEN || '').trim();
+const TEST_EVENT_CODE = (process.env.META_TEST_EVENT_CODE || '').trim() || undefined;
 
 // Eventos que esta função aceita disparar (allowlist defensiva)
 const ALLOWED_EVENTS = new Set(['Lead', 'PageView', 'ViewContent']);
