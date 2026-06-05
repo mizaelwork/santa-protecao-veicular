@@ -10,8 +10,44 @@ document.addEventListener('DOMContentLoaded', () => {
     el.setAttribute('href', WA_URL);
     el.setAttribute('target', '_blank');
     el.setAttribute('rel', 'noopener noreferrer');
+    el.addEventListener('click', () => trackLead());
   });
 });
+
+/* ---------- META: EVENTO LEAD (Pixel + CAPI) ---------- */
+// Dispara o mesmo evento pelo Pixel (navegador) e pela API de
+// Conversões (servidor) usando um event_id em comum, para que a
+// Meta deduplique e conte o Lead uma única vez.
+function trackLead() {
+  const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
+    (Date.now() + '-' + Math.random().toString(16).slice(2));
+
+  // Lado cliente (Pixel)
+  if (typeof fbq === 'function') {
+    fbq('track', 'Lead', {}, { eventID: eventId });
+  }
+
+  // Lado servidor (CAPI) — não bloqueia a navegação para o WhatsApp
+  try {
+    fetch('/api/capi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        event_name: 'Lead',
+        event_id: eventId,
+        event_source_url: window.location.href,
+        fbp: getCookie('_fbp'),
+        fbc: getCookie('_fbc'),
+      }),
+    }).catch(() => {});
+  } catch (_) { /* falha de rede não deve impedir o WhatsApp */ }
+}
+
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : undefined;
+}
 
 /* ---------- NAVBAR ---------- */
 const navbar = document.getElementById('navbar');
