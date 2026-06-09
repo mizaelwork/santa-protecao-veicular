@@ -8,7 +8,7 @@ const WA_URL = 'https://wa.me/554888533236?text=Ol%C3%A1!%20Vim%20pelo%20site%20
 
 // Endpoint da API de Conversões (CAPI) hospedado no painel Gestão Comercial.
 // Site estático não tem backend, por isso o evento de servidor é enviado cross-origin.
-const CAPI_ENDPOINT = 'https://gestao.angelcode.shop/api/capi';
+const CAPI_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
 
 // Inject WhatsApp href into all WA links
 document.addEventListener('DOMContentLoaded', () => {
