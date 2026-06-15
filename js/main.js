@@ -52,6 +52,11 @@ function trackLead() {
     fbq('track', 'Lead', {}, { eventID: eventId });
   }
 
+  // Google Ads — conversão "Clique WhatsApp" (categoria Contato)
+  if (typeof gtag === 'function') {
+    gtag('event', 'conversion', { send_to: 'AW-10777457819/kzolCKrK0b8cEJvpi5Mo' });
+  }
+
   // Lado servidor (CAPI) — não bloqueia a navegação para o WhatsApp
   try {
     fetch(CAPI_ENDPOINT, {
