@@ -2,9 +2,28 @@
    SANTA PROTEÇÃO VEICULAR — main.js
    ============================================================ */
 
-// Texto pré-preenchido identifica o canal "site" para rastreamento de origem no painel
-// (detectado por "vim pelo site" em lead-origem.ts do Gestão Comercial).
-const WA_URL = 'https://wa.me/554888533236?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Santa%20e%20gostaria%20de%20saber%20mais%20sobre%20prote%C3%A7%C3%A3o%20veicular.';
+// O texto pré-preenchido identifica o canal de origem no painel (detectado por
+// "vim pelo site" / "vim pelo google" em lead-origem.ts do Gestão Comercial).
+// Visita vinda do Google Ads (gclid auto-tag ou utm_source=google) usa o texto "Google".
+const WA_NUMERO = '554888533236';
+const TEXTO_SITE = 'Olá! Vim pelo site da Santa e gostaria de saber mais sobre proteção veicular.';
+const TEXTO_GOOGLE = 'Olá! Vim pelo Google e gostaria de saber mais sobre proteção veicular.';
+
+function veioDoGoogle() {
+  try {
+    const p = new URLSearchParams(location.search);
+    if (p.has('gclid') || (p.get('utm_source') || '').toLowerCase() === 'google') {
+      sessionStorage.setItem('src_google', '1'); // mantém a origem ao navegar entre páginas
+      return true;
+    }
+    return sessionStorage.getItem('src_google') === '1';
+  } catch (_) {
+    const p = new URLSearchParams(location.search);
+    return p.has('gclid') || (p.get('utm_source') || '').toLowerCase() === 'google';
+  }
+}
+
+const WA_URL = `https://wa.me/${WA_NUMERO}?text=${encodeURIComponent(veioDoGoogle() ? TEXTO_GOOGLE : TEXTO_SITE)}`;
 
 // Endpoint da API de Conversões (CAPI) hospedado no painel Gestão Comercial.
 // Site estático não tem backend, por isso o evento de servidor é enviado cross-origin.
