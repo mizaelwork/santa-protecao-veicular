@@ -35,7 +35,7 @@ function criarLinkWhatsapp(mensagem) {
 }
 
 /* ---------- RASTREAMENTO META E GOOGLE ADS (DEDUPLICADO) ---------- */
-function trackLead(origemSimulacao = '') {
+function trackLead(origemSimulacao = '', nome = '', telefone = '') {
   const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
     (Date.now() + '-' + Math.random().toString(16).slice(2));
 
@@ -61,7 +61,9 @@ function trackLead(origemSimulacao = '') {
         event_source_url: window.location.href,
         fbp: getCookie('_fbp'),
         fbc: getCookie('_fbc'),
-        lead_simulador: origemSimulacao || undefined
+        lead_simulador: origemSimulacao || undefined,
+        nome: nome || undefined,
+        telefone: telefone || undefined
       }),
     }).catch(() => {});
   } catch (_) {}
@@ -182,7 +184,7 @@ function inicializarSimuladorHero() {
       const link = criarLinkWhatsapp(mensagem);
       window.open(link, '_blank', 'noopener,noreferrer');
       
-      trackLead(`Simulador_Hero_${veiculoSelecionado}`);
+      trackLead(`Simulador_Hero_${veiculoSelecionado}`, nome, telefone);
     });
   }
 }
@@ -263,7 +265,7 @@ function inicializarCalculadoraOpcionais() {
       window.open(link, '_blank', 'noopener,noreferrer');
 
       const itensNomes = Array.from(document.querySelectorAll('.calc-checkbox-item.checked')).map(i => i.dataset.title);
-      trackLead(`Calculadora_Opcionais: ${itensNomes.join(',')}`);
+      trackLead(`Calculadora_Opcionais: ${itensNomes.join(',')}`, nome, telefone);
     });
   }
 
