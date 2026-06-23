@@ -334,7 +334,7 @@ button, input, select {
 }
 
 .nav-btn-wa-v2 {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  background: linear-gradient(135deg, var(--success), var(--success-light));
   color: var(--white);
   padding: 10px 20px;
   border-radius: var(--radius-full);
@@ -345,13 +345,13 @@ button, input, select {
   align-items: center;
   gap: 8px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 15px rgba(212, 0, 0, 0.25);
+  box-shadow: var(--shadow-green);
   transition: var(--transition);
 }
 
 .nav-btn-wa-v2:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 0, 0, 0.45);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
 }
 
 .nav-btn-wa-v2 svg {
