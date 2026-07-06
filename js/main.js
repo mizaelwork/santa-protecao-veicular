@@ -252,14 +252,7 @@ function inicializarCalculadoraOpcionais() {
       }
 
       const canal = veioDoGoogle() ? 'Google' : 'site da Santa';
-      let mensagem = `Olá! Meu nome é ${nome} (WhatsApp: ${telefone}). Vim pelo ${canal} e montei uma proteção sob medida. Gostaria de simular a contratação.\n\nBenefícios selecionados:\n`;
-      
-      const itensMarcados = [];
-      document.querySelectorAll('.calc-checkbox-item.checked').forEach(item => {
-        itensMarcados.push(`- ${item.dataset.title}`);
-      });
-      
-      mensagem += itensMarcados.join('\n');
+      const mensagem = `Olá! Meu nome é ${nome}. Vim pelo ${canal} e montei uma proteção sob medida, gostaria de tirar algumas dúvidas.`;
 
       const link = criarLinkWhatsapp(mensagem);
       window.open(link, '_blank', 'noopener,noreferrer');
