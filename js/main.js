@@ -179,7 +179,7 @@ function inicializarSimuladorHero() {
       }
 
       const canal = veioDoGoogle() ? 'Google' : 'site da Santa';
-      const mensagem = `Olá! Meu nome é ${nome} (WhatsApp: ${telefone}). Vim pelo ${canal} e gostaria de simular uma proteção para meu(minha) ${veiculoSelecionado}. Pode me ajudar?`;
+      const mensagem = `Olá! Meu nome é ${nome}. Vim pelo ${canal} e gostaria de simular uma proteção para meu(minha) ${veiculoSelecionado}.`;
 
       const link = criarLinkWhatsapp(mensagem);
       window.open(link, '_blank', 'noopener,noreferrer');
