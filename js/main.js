@@ -9,19 +9,52 @@ const TEXTO_GOOGLE_PADRAO = 'Olá! Vim pelo Google e gostaria de saber mais sobr
 // Endpoint do CAPI para rastreamento de servidor
 const CAPI_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
 
+/* ---------- ORIGEM DA VISITA (gclid / UTMs) ---------- */
+// Guardado na SESSÃO, não só lido da URL do momento: quem entra por um anúncio e navega até a
+// calculadora antes de enviar já não tem o gclid na barra de endereços. Sem isso, o lead chega
+// sem saber de qual campanha veio.
+const CHAVES_TRACKING = [
+  'gclid', 'gbraid', 'wbraid', 'fbclid',
+  'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'
+];
+
+function coletarTracking() {
+  let guardado = {};
+  try {
+    guardado = JSON.parse(sessionStorage.getItem('santa_tracking') || '{}');
+  } catch (_) {}
+
+  const p = new URLSearchParams(location.search);
+  let mudou = false;
+
+  CHAVES_TRACKING.forEach((chave) => {
+    const valor = p.get(chave);
+    // Só a PRIMEIRA ocorrência conta: a origem da visita é onde ela começou.
+    if (valor && !guardado[chave]) {
+      guardado[chave] = valor.slice(0, 120);
+      mudou = true;
+    }
+  });
+
+  if (!guardado.landing_url) {
+    guardado.landing_url = location.href.slice(0, 500);
+    mudou = true;
+  }
+  if (!guardado.referrer && document.referrer) {
+    guardado.referrer = document.referrer.slice(0, 500);
+    mudou = true;
+  }
+
+  if (mudou) {
+    try { sessionStorage.setItem('santa_tracking', JSON.stringify(guardado)); } catch (_) {}
+  }
+  return guardado;
+}
+
 // Verifica se a visita tem origem no tráfego pago do Google
 function veioDoGoogle() {
-  try {
-    const p = new URLSearchParams(location.search);
-    if (p.has('gclid') || (p.get('utm_source') || '').toLowerCase() === 'google') {
-      sessionStorage.setItem('src_google', '1');
-      return true;
-    }
-    return sessionStorage.getItem('src_google') === '1';
-  } catch (_) {
-    const p = new URLSearchParams(location.search);
-    return p.has('gclid') || (p.get('utm_source') || '').toLowerCase() === 'google';
-  }
+  const t = coletarTracking();
+  return !!(t.gclid || t.gbraid || t.wbraid || (t.utm_source || '').toLowerCase() === 'google');
 }
 
 // Retorna a mensagem padrão baseada na origem
@@ -35,7 +68,7 @@ function criarLinkWhatsapp(mensagem) {
 }
 
 /* ---------- RASTREAMENTO META E GOOGLE ADS (DEDUPLICADO) ---------- */
-function trackLead(origemSimulacao = '', nome = '', telefone = '') {
+function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) {
   const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
     (Date.now() + '-' + Math.random().toString(16).slice(2));
 
@@ -49,7 +82,7 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '') {
     gtag('event', 'conversion', { send_to: 'AW-10777457819/kzoICKrK0b8cEJvpi5Mo' });
   }
 
-  // Lado Servidor (CAPI)
+  // Lado Servidor (CAPI) — é por aqui que o lead vira registro no CRM e notificação no Telegram.
   try {
     fetch(CAPI_ENDPOINT, {
       method: 'POST',
@@ -63,10 +96,28 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '') {
         fbc: getCookie('_fbc'),
         lead_simulador: origemSimulacao || undefined,
         nome: nome || undefined,
-        telefone: telefone || undefined
+        telefone: telefone || undefined,
+        veiculo: extras.veiculo || undefined,
+        opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined,
+        tracking: coletarTracking()
       }),
     }).catch(() => {});
   } catch (_) {}
+}
+
+/**
+ * Trava de duplo clique. Cada clique gerava um Lead novo na Meta, uma conversão nova no Ads e
+ * agora geraria também um push no Telegram — tudo pela mesma pessoa.
+ */
+function travarBotao(botao, ms = 3000) {
+  if (!botao || botao.dataset.enviando === '1') return false;
+  botao.dataset.enviando = '1';
+  botao.disabled = true;
+  setTimeout(() => {
+    botao.dataset.enviando = '0';
+    botao.disabled = false;
+  }, ms);
+  return true;
 }
 
 function getCookie(name) {
@@ -178,13 +229,17 @@ function inicializarSimuladorHero() {
         return;
       }
 
+      if (!travarBotao(simularBtn)) return;
+
       const canal = veioDoGoogle() ? 'Google' : 'site da Santa';
       const mensagem = `Olá! Meu nome é ${nome}. Vim pelo ${canal} e gostaria de simular uma proteção para meu(minha) ${veiculoSelecionado}.`;
 
       const link = criarLinkWhatsapp(mensagem);
       window.open(link, '_blank', 'noopener,noreferrer');
-      
-      trackLead(`Simulador_Hero_${veiculoSelecionado}`, nome, telefone);
+
+      trackLead(`Simulador_Hero_${veiculoSelecionado}`, nome, telefone, {
+        veiculo: veiculoSelecionado
+      });
     });
   }
 }
@@ -251,14 +306,21 @@ function inicializarCalculadoraOpcionais() {
         return;
       }
 
+      if (!travarBotao(calcSimularBtn)) return;
+
+      const itensNomes = Array.from(document.querySelectorAll('.calc-checkbox-item.checked'))
+        .map(i => i.dataset.title)
+        .filter(Boolean);
+
       const canal = veioDoGoogle() ? 'Google' : 'site da Santa';
       const mensagem = `Olá! Meu nome é ${nome}. Vim pelo ${canal} e montei uma proteção sob medida, gostaria de tirar algumas dúvidas.`;
 
       const link = criarLinkWhatsapp(mensagem);
       window.open(link, '_blank', 'noopener,noreferrer');
 
-      const itensNomes = Array.from(document.querySelectorAll('.calc-checkbox-item.checked')).map(i => i.dataset.title);
-      trackLead(`Calculadora_Opcionais: ${itensNomes.join(',')}`, nome, telefone);
+      trackLead(`Calculadora_Opcionais: ${itensNomes.join(',')}`, nome, telefone, {
+        opcionais: itensNomes
+      });
     });
   }
 
