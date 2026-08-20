@@ -83,26 +83,48 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) 
   }
 
   // Lado Servidor (CAPI) — é por aqui que o lead vira registro no CRM e notificação no Telegram.
+  enviarCapi({
+    event_name: 'Lead',
+    event_id: eventId,
+    lead_simulador: origemSimulacao || undefined,
+    nome: nome || undefined,
+    telefone: telefone || undefined,
+    veiculo: extras.veiculo || undefined,
+    opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined
+  });
+}
+
+/** POST no endpoint CAPI. keepalive garante o envio mesmo se a aba for fechada em seguida. */
+function enviarCapi(dados) {
   try {
     fetch(CAPI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
-      body: JSON.stringify({
-        event_name: 'Lead',
-        event_id: eventId,
+      body: JSON.stringify(Object.assign({
         event_source_url: window.location.href,
         fbp: getCookie('_fbp'),
         fbc: getCookie('_fbc'),
-        lead_simulador: origemSimulacao || undefined,
-        nome: nome || undefined,
-        telefone: telefone || undefined,
-        veiculo: extras.veiculo || undefined,
-        opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined,
         tracking: coletarTracking()
-      }),
+      }, dados)),
     }).catch(() => {});
   } catch (_) {}
+}
+
+/**
+ * Manda a visita também pelo servidor. O Pixel do navegador já dispara PageView, mas ele se perde
+ * com bloqueador de anúncio, iOS e cookie negado — que é justamente o público que o CAPI recupera.
+ *
+ * Depende do `window.__pageViewId` criado no snippet do Pixel (<head>): é o mesmo id nos dois
+ * lados, e é ele que faz a Meta entender que é UMA visita, não duas. Sem o id, não mandamos nada
+ * — inflar o número seria pior que não medir.
+ */
+function rastrearPageView() {
+  if (!window.__pageViewId) return;
+  // Espera o fbevents.js gravar os cookies _fbp/_fbc: eles são o que liga a visita ao perfil.
+  setTimeout(function () {
+    enviarCapi({ event_name: 'PageView', event_id: window.__pageViewId });
+  }, 1500);
 }
 
 /**
@@ -128,6 +150,9 @@ function getCookie(name) {
 
 /* ---------- INICIALIZAÇÃO E EVENTOS ---------- */
 document.addEventListener('DOMContentLoaded', () => {
+
+  // 0. Visita pelo servidor (CAPI), deduplicada com o Pixel do navegador
+  rastrearPageView();
 
   // 1. Aplicar máscara de telefone nos inputs
   document.querySelectorAll('input[type="tel"]').forEach(input => {

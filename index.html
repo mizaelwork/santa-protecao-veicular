@@ -27,7 +27,12 @@
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
   fbq('init', '2460445414378839');
-  fbq('track', 'PageView');
+  // O mesmo id vai no Pixel (aqui) e no CAPI (js/main.js) para a Meta deduplicar a visita.
+  // Sem ele, o servidor contaria um PageView a mais em cima do que o navegador já mandou.
+  window.__pageViewId = (window.crypto && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : (Date.now() + '-' + Math.random().toString(16).slice(2));
+  fbq('track', 'PageView', {}, { eventID: window.__pageViewId });
   </script>
   <noscript><img height="1" width="1" style="display:none"
   src="https://www.facebook.com/tr?id=2460445414378839&ev=PageView&noscript=1"
