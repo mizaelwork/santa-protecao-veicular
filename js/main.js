@@ -72,6 +72,10 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) 
   const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
     (Date.now() + '-' + Math.random().toString(16).slice(2));
 
+  // Marca a visita como convertida: é o que separa, na medição, quem desistiu de quem pediu
+  // cotação — sem isso o diagnóstico contaria o lead como "saiu sem fazer nada".
+  if (typeof sessao === 'object') sessao.virouLead = true;
+
   // Pixel (navegador)
   if (typeof fbq === 'function') {
     fbq('track', 'Lead', {}, { eventID: eventId });
@@ -92,6 +96,129 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) 
     veiculo: extras.veiculo || undefined,
     opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined
   });
+}
+
+/* ---------- MEDIÇÃO DA VISITA (performance + engajamento) ---------- */
+// Uma linha por visita no nosso banco, enviada na saída. Serve para responder por que quem não
+// pediu cotação foi embora: se o site demorou a abrir (problema de velocidade) ou se abriu rápido
+// e mesmo assim não convenceu (problema de conteúdo/oferta). As duas causas pedem ações opostas,
+// e só dá para separá-las com os dois sinais medidos na MESMA visita.
+//
+// Não vai para a Meta e não carrega nenhum dado pessoal — é medição técnica anônima.
+const SESSAO_ENDPOINT = 'https://gestao.angelcode.com.br/api/site/sessao';
+
+const sessao = {
+  id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)),
+  inicio: Date.now(),
+  scrollMax: 0,
+  ultimaSecao: null,
+  interagiu: false,
+  virouLead: false,
+  lcp: null,
+  enviada: false
+};
+
+function iniciarMedicaoSessao() {
+  // LCP: quando o maior elemento da tela terminou de aparecer. É a métrica que o Google usa
+  // para dizer se a página "abriu rápido" na percepção de quem está olhando.
+  try {
+    if (typeof PerformanceObserver === 'function') {
+      const obs = new PerformanceObserver((lista) => {
+        const entradas = lista.getEntries();
+        const ultima = entradas[entradas.length - 1];
+        if (ultima) sessao.lcp = Math.round(ultima.startTime);
+      });
+      obs.observe({ type: 'largest-contentful-paint', buffered: true });
+    }
+  } catch (_) {}
+
+  // Profundidade de rolagem (0-100).
+  let travado = false;
+  window.addEventListener('scroll', () => {
+    if (travado) return;
+    travado = true;
+    setTimeout(() => {
+      travado = false;
+      const altura = document.documentElement.scrollHeight - window.innerHeight;
+      if (altura > 0) {
+        const pct = Math.min(100, Math.round((window.scrollY / altura) * 100));
+        if (pct > sessao.scrollMax) sessao.scrollMax = pct;
+      }
+    }, 250);
+  }, { passive: true });
+
+  // Interação real: clique ou digitação. Movimento de mouse não conta — o dedo passa pela tela
+  // sem que a pessoa tenha feito nada.
+  ['click', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, () => { sessao.interagiu = true; }, { passive: true, once: true });
+  });
+
+  // Última seção vista: onde a leitura parou.
+  try {
+    const obsSecao = new IntersectionObserver((entradas) => {
+      entradas.forEach((e) => {
+        if (e.isIntersecting && e.target.id) sessao.ultimaSecao = e.target.id;
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('section[id]').forEach((el) => obsSecao.observe(el));
+  } catch (_) {}
+
+  // Envio na saída. `visibilitychange → hidden` é o único evento confiável no mobile: o
+  // `beforeunload` não dispara quando o app é trocado ou a aba é descartada.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') enviarSessao();
+  });
+  window.addEventListener('pagehide', enviarSessao);
+}
+
+/** Mesmo vocabulário do servidor: google | anuncio | site. */
+function fonteDaVisita(t) {
+  const source = (t.utm_source || '').toLowerCase();
+  if (t.gclid || t.gbraid || t.wbraid || source === 'google') return 'google';
+  if (t.fbclid || source === 'facebook' || source === 'instagram') return 'anuncio';
+  return 'site';
+}
+
+function enviarSessao() {
+  // O upsert no servidor é por sessao_id, então reenviar (voltou para a aba e saiu de novo) só
+  // atualiza a mesma linha com o tempo e o scroll maiores.
+  const t = coletarTracking();
+  let ttfb = null, dom = null;
+  try {
+    const nav = performance.getEntriesByType('navigation')[0];
+    if (nav) {
+      ttfb = Math.round(nav.responseStart);
+      dom = Math.round(nav.domContentLoadedEventEnd);
+    }
+  } catch (_) {}
+
+  const dados = {
+    sessao_id: sessao.id,
+    pagina: location.pathname,
+    ttfb_ms: ttfb,
+    dom_ms: dom,
+    lcp_ms: sessao.lcp,
+    duracao_ms: Date.now() - sessao.inicio,
+    scroll_max: sessao.scrollMax,
+    ultima_secao: sessao.ultimaSecao,
+    interagiu: sessao.interagiu,
+    virou_lead: sessao.virouLead,
+    // Saiu com a página ainda carregando: o indício mais forte de desistência por lentidão.
+    carregou: document.readyState === 'complete',
+    fonte: fonteDaVisita(t),
+    utm_campaign: t.utm_campaign || null,
+    referrer: t.referrer || null
+  };
+
+  try {
+    const corpo = JSON.stringify(dados);
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(SESSAO_ENDPOINT, corpo);
+    } else {
+      fetch(SESSAO_ENDPOINT, { method: 'POST', body: corpo, keepalive: true }).catch(() => {});
+    }
+    sessao.enviada = true;
+  } catch (_) {}
 }
 
 /** POST no endpoint CAPI. keepalive garante o envio mesmo se a aba for fechada em seguida. */
@@ -153,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 0. Visita pelo servidor (CAPI), deduplicada com o Pixel do navegador
   rastrearPageView();
+  iniciarMedicaoSessao();
 
   // 1. Aplicar máscara de telefone nos inputs
   document.querySelectorAll('input[type="tel"]').forEach(input => {
