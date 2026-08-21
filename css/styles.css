@@ -315,7 +315,7 @@ button, input, select {
   width: 100%;
 }
 
-.nav-btn-wa-v2 {
+.nav-links-v2 .nav-btn-wa-v2 {
   background: linear-gradient(135deg, var(--success), var(--success-light));
   color: var(--white);
   padding: 10px 20px;
@@ -331,14 +331,20 @@ button, input, select {
   transition: var(--transition);
 }
 
-.nav-btn-wa-v2:hover {
+.nav-links-v2 .nav-btn-wa-v2:hover {
+  color: var(--white);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(37, 211, 102, 0.45);
+}
+
+.nav-links-v2 .nav-btn-wa-v2::after {
+  display: none;
 }
 
 .nav-btn-wa-v2 svg {
   width: 16px;
   height: 16px;
+  flex-shrink: 0;
   fill: currentColor;
 }
 
