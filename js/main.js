@@ -525,7 +525,10 @@ function inicializarCarrosselDepoimentos() {
     currentSlide = (index + totalSlides) % totalSlides;
     track.style.transform = `translateX(-${currentSlide * 100}%)`;
     dots.forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+    slides.forEach((s, i) => s.classList.toggle('active-slide', i === currentSlide));
   }
+
+  goToSlide(0);
 
   prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
   nextBtn?.addEventListener('click', () => goToSlide(currentSlide + 1));
