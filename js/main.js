@@ -533,17 +533,30 @@ function inicializarCarrosselDepoimentos() {
   });
   const dots = document.querySelectorAll('.carousel-dot-v2');
 
+  const mqDesktop = window.matchMedia('(min-width: 769px)');
+
+  function visibleCount() {
+    return mqDesktop.matches ? 2 : 1;
+  }
+
   function goToSlide(index) {
     currentSlide = (index + totalSlides) % totalSlides;
-    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    track.style.transform = `translateX(-${currentSlide * slides[0].offsetWidth}px)`;
     dots.forEach((d, i) => {
       d.classList.toggle('active', i === currentSlide);
       d.setAttribute('aria-selected', i === currentSlide ? 'true' : 'false');
     });
-    slides.forEach((s, i) => s.classList.toggle('active-slide', i === currentSlide));
+    const count = visibleCount();
+    slides.forEach((s, i) => {
+      const emView = (i - currentSlide + totalSlides) % totalSlides < count;
+      s.classList.toggle('active-slide', emView);
+    });
   }
 
   goToSlide(0);
+
+  // Reajusta a posição (em px) se a janela for redimensionada
+  window.addEventListener('resize', () => goToSlide(currentSlide));
 
   prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
   nextBtn?.addEventListener('click', () => goToSlide(currentSlide + 1));
