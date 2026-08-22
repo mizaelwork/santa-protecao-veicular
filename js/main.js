@@ -511,7 +511,7 @@ function inicializarMenuMobile() {
 /* ---------- CARROSSEL DE DEPOIMENTOS ---------- */
 function inicializarCarrosselDepoimentos() {
   const track = document.getElementById('testimonialsTrack-v2');
-  const dots = document.querySelectorAll('.carousel-dot-v2');
+  const dotsContainer = document.getElementById('carouselDots-v2');
   const prevBtn = document.getElementById('carouselPrev-v2');
   const nextBtn = document.getElementById('carouselNext-v2');
 
@@ -521,10 +521,25 @@ function inicializarCarrosselDepoimentos() {
   const slides = document.querySelectorAll('.testimonial-slide-v2');
   const totalSlides = slides.length;
 
+  // Gera um dot por slide dinamicamente
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot-v2';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-selected', 'false');
+    dot.setAttribute('aria-label', `Slide ${i + 1}`);
+    dot.addEventListener('click', () => goToSlide(i));
+    dotsContainer.appendChild(dot);
+  });
+  const dots = document.querySelectorAll('.carousel-dot-v2');
+
   function goToSlide(index) {
     currentSlide = (index + totalSlides) % totalSlides;
     track.style.transform = `translateX(-${currentSlide * 100}%)`;
-    dots.forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+    dots.forEach((d, i) => {
+      d.classList.toggle('active', i === currentSlide);
+      d.setAttribute('aria-selected', i === currentSlide ? 'true' : 'false');
+    });
     slides.forEach((s, i) => s.classList.toggle('active-slide', i === currentSlide));
   }
 
@@ -532,14 +547,13 @@ function inicializarCarrosselDepoimentos() {
 
   prevBtn?.addEventListener('click', () => goToSlide(currentSlide - 1));
   nextBtn?.addEventListener('click', () => goToSlide(currentSlide + 1));
-  dots.forEach((d, i) => d.addEventListener('click', () => goToSlide(i)));
 
-  // Auto-play de 7 segundos
-  let autoPlay = setInterval(() => goToSlide(currentSlide + 1), 7000);
+  // Auto-play trocando uma imagem por vez
+  let autoPlay = setInterval(() => goToSlide(currentSlide + 1), 4500);
 
   track.parentElement.addEventListener('mouseenter', () => clearInterval(autoPlay));
   track.parentElement.addEventListener('mouseleave', () => {
-    autoPlay = setInterval(() => goToSlide(currentSlide + 1), 7000);
+    autoPlay = setInterval(() => goToSlide(currentSlide + 1), 4500);
   });
 
   // Touch/Swipe responsivo
