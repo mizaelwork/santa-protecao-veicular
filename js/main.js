@@ -8,6 +8,7 @@ const TEXTO_GOOGLE_PADRAO = 'Olá! Vim pelo Google e gostaria de saber mais sobr
 
 // Endpoint do CAPI para rastreamento de servidor
 const CAPI_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
+const OBRIGADO_URL = `${window.location.origin}/obrigado`;
 
 /* ---------- ORIGEM DA VISITA (gclid / UTMs) ---------- */
 // Guardado na SESSÃO, não só lido da URL do momento: quem entra por um anúncio e navega até a
@@ -67,6 +68,40 @@ function criarLinkWhatsapp(mensagem) {
   return `https://wa.me/${WA_NUMERO}?text=${encodeURIComponent(mensagem)}`;
 }
 
+function codificarBase64Url(json) {
+  const utf8 = unescape(encodeURIComponent(json));
+  return btoa(utf8).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+function montarTrackingObrigado() {
+  const tracking = coletarTracking();
+  return {
+    landing_url: tracking.landing_url || location.href.slice(0, 500),
+    referrer: tracking.referrer || document.referrer.slice(0, 500),
+    utm_source: tracking.utm_source || undefined,
+    utm_medium: tracking.utm_medium || undefined,
+    utm_campaign: tracking.utm_campaign || undefined,
+    utm_content: tracking.utm_content || undefined,
+    utm_term: tracking.utm_term || undefined
+  };
+}
+
+function montarUrlObrigado(eventId, nome, telefone, extras = {}) {
+  const payload = {
+    event_id: eventId,
+    nome,
+    telefone,
+    lead_simulador: true,
+    veiculo: extras.veiculo || undefined,
+    opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined,
+    tracking: montarTrackingObrigado(),
+    sessao_id: typeof sessao === 'object' ? sessao.id : undefined,
+    origem_simulacao: extras.origemSimulacao || undefined
+  };
+
+  return `${OBRIGADO_URL}#d=${codificarBase64Url(JSON.stringify(payload))}`;
+}
+
 /* ---------- RASTREAMENTO META E GOOGLE ADS (DEDUPLICADO) ---------- */
 function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) {
   const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
@@ -87,7 +122,7 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) 
   }
 
   // Lado Servidor (CAPI) — é por aqui que o lead vira registro no CRM e notificação no Telegram.
-  enviarCapi({
+  const capiPromise = enviarCapi({
     event_name: 'Lead',
     event_id: eventId,
     lead_simulador: origemSimulacao || undefined,
@@ -96,6 +131,8 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) 
     veiculo: extras.veiculo || undefined,
     opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined
   });
+
+  return { eventId, capiPromise };
 }
 
 /* ---------- MEDIÇÃO DA VISITA (performance + engajamento) ---------- */
@@ -224,7 +261,7 @@ function enviarSessao() {
 /** POST no endpoint CAPI. keepalive garante o envio mesmo se a aba for fechada em seguida. */
 function enviarCapi(dados) {
   try {
-    fetch(CAPI_ENDPOINT, {
+    return fetch(CAPI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
@@ -234,8 +271,11 @@ function enviarCapi(dados) {
         fbc: getCookie('_fbc'),
         tracking: coletarTracking()
       }, dados)),
-    }).catch(() => {});
+    })
+      .then((response) => response.ok)
+      .catch(() => false);
   } catch (_) {}
+  return Promise.resolve(false);
 }
 
 /**
@@ -384,14 +424,21 @@ function inicializarSimuladorHero() {
 
       if (!travarBotao(simularBtn)) return;
 
-      const canal = veioDoGoogle() ? 'Google' : 'site da Santa';
-      const mensagem = `Olá! Meu nome é ${nome}. Vim pelo ${canal} e gostaria de simular uma proteção para meu(minha) ${veiculoSelecionado}.`;
-
-      const link = criarLinkWhatsapp(mensagem);
-      window.open(link, '_blank', 'noopener,noreferrer');
-
-      trackLead(`Simulador_Hero_${veiculoSelecionado}`, nome, telefone, {
+      const origemSimulacao = `Simulador_Hero_${veiculoSelecionado}`;
+      const { eventId, capiPromise } = trackLead(origemSimulacao, nome, telefone, {
         veiculo: veiculoSelecionado
+      });
+
+      capiPromise.then((ok) => {
+        if (!ok) {
+          alert('Não conseguimos concluir o envio agora. Tente novamente em alguns instantes.');
+          return;
+        }
+
+        window.location.assign(montarUrlObrigado(eventId, nome, telefone, {
+          veiculo: veiculoSelecionado,
+          origemSimulacao
+        }));
       });
     });
   }
@@ -465,14 +512,21 @@ function inicializarCalculadoraOpcionais() {
         .map(i => i.dataset.title)
         .filter(Boolean);
 
-      const canal = veioDoGoogle() ? 'Google' : 'site da Santa';
-      const mensagem = `Olá! Meu nome é ${nome}. Vim pelo ${canal} e montei uma proteção sob medida, gostaria de tirar algumas dúvidas.`;
-
-      const link = criarLinkWhatsapp(mensagem);
-      window.open(link, '_blank', 'noopener,noreferrer');
-
-      trackLead(`Calculadora_Opcionais: ${itensNomes.join(',')}`, nome, telefone, {
+      const origemSimulacao = `Calculadora_Opcionais: ${itensNomes.join(',')}`;
+      const { eventId, capiPromise } = trackLead(origemSimulacao, nome, telefone, {
         opcionais: itensNomes
+      });
+
+      capiPromise.then((ok) => {
+        if (!ok) {
+          alert('Não conseguimos concluir o envio agora. Tente novamente em alguns instantes.');
+          return;
+        }
+
+        window.location.assign(montarUrlObrigado(eventId, nome, telefone, {
+          opcionais: itensNomes,
+          origemSimulacao
+        }));
       });
     });
   }

@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap');
+
+:root { --amber: #f5a623; --green: #25d366; --ink: #070707; --muted: #aaa9b1; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ink); color: #fff; font-family: Inter, sans-serif; }
+.thank-you { min-height: 100svh; display: grid; place-items: center; overflow: hidden; position: relative; padding: 32px 24px; background: linear-gradient(180deg, #090909 0%, #0d0d0d 48%, #080808 100%); }
+.glow { position: absolute; width: 52vw; height: 52vw; border-radius: 50%; filter: blur(22px); opacity: .22; pointer-events: none; }
+.glow-left { top: -30vw; left: -22vw; background: #be185d; }
+.glow-right { right: -22vw; bottom: -30vw; background: #f97316; }
+.thank-you__content { position: relative; width: min(100%, 760px); text-align: center; }
+.brand { display: inline-flex; align-items: center; gap: 14px; text-align: left; margin-bottom: 42px; }
+.brand img { width: 56px; height: 56px; object-fit: contain; border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 7px; background: rgba(255,255,255,.05); }
+.brand p { margin: 0; font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: #d0ced4; }
+.brand span { display: block; margin-top: 5px; color: #85838b; font-size: 13px; }
+.badge { display: inline-block; padding: 10px 16px; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; background: rgba(255,255,255,.05); color: #d8d6dc; font-size: 11px; letter-spacing: .19em; text-transform: uppercase; }
+h1 { margin: 25px auto 32px; max-width: 730px; font-family: Sora, sans-serif; font-size: clamp(30px, 5vw, 54px); line-height: 1.17; letter-spacing: -.04em; }
+.whatsapp-button { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 17px 24px; border-radius: 16px; background: var(--green); color: #03150b; font-weight: 700; text-decoration: none; box-shadow: 0 24px 60px rgba(37,211,102,.28); transition: transform .2s ease, filter .2s ease; }
+.whatsapp-button:hover { transform: translateY(-3px); filter: brightness(1.06); }
+.whatsapp-button svg { width: 21px; height: 21px; fill: currentColor; }
+.note { margin: 18px 0 0; color: var(--muted); font-size: 14px; }
+@media (max-width: 560px) { .thank-you { padding: 28px 20px; } .brand { margin-bottom: 32px; } .brand p { font-size: 11px; } .brand span { font-size: 12px; } .badge { letter-spacing: .12em; } .whatsapp-button { display: flex; width: 100%; } }

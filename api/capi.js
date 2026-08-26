@@ -24,7 +24,7 @@ const ACCESS_TOKEN = (process.env.META_CAPI_TOKEN || '').trim();
 const TEST_EVENT_CODE = (process.env.META_TEST_EVENT_CODE || '').trim() || undefined;
 
 // Eventos que esta função aceita disparar (allowlist defensiva)
-const ALLOWED_EVENTS = new Set(['Lead', 'PageView', 'ViewContent']);
+const ALLOWED_EVENTS = new Set(['Lead', 'PageView', 'ViewContent', 'CompleteRegistration', 'Contact']);
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
