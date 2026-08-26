@@ -1,5 +1,5 @@
 const WA_NUMERO = '554888533236';
-const CAPI_ENDPOINT = '/api/capi';
+const CAPI_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
 
 function gerarId(prefixo) {
   return `${prefixo}:${crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`;
@@ -28,7 +28,22 @@ function enviarEvento(eventName, eventId, payload) {
     method: 'POST',
     keepalive: true,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ event_name: eventName, event_id: eventId, event_source_url: `${location.origin}${location.pathname}`, fbp: lerCookie('_fbp'), fbc: lerCookie('_fbc'), custom_data: { lead_event_id: payload?.event_id } })
+    body: JSON.stringify({
+      event_name: eventName,
+      event_id: eventId,
+      event_source_url: `${location.origin}${location.pathname}`,
+      fbp: lerCookie('_fbp'),
+      fbc: lerCookie('_fbc'),
+      // O telefone une esta etapa ao Lead original no painel. Sem ele, o evento era gravado
+      // isoladamente e o funil sempre parecia parar no formulário.
+      nome: payload?.nome,
+      telefone: payload?.telefone,
+      lead_simulador: payload?.origem_simulacao,
+      veiculo: payload?.veiculo,
+      opcionais: payload?.opcionais,
+      tracking: payload?.tracking,
+      custom_data: { lead_event_id: payload?.event_id }
+    })
   }).catch(() => undefined);
 }
 
