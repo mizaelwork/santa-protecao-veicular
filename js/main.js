@@ -7,7 +7,7 @@ const TEXTO_SITE_PADRAO = 'Olá! Vim pelo site da Santa e gostaria de saber mais
 const TEXTO_GOOGLE_PADRAO = 'Olá! Vim pelo Google e gostaria de saber mais sobre proteção veicular.';
 
 // Endpoint do CAPI para rastreamento de servidor
-const CAPI_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
+const CAPI_ENDPOINT = '/api/capi';
 const OBRIGADO_URL = `${window.location.origin}/obrigado`;
 
 /* ---------- ORIGEM DA VISITA (gclid / UTMs) ---------- */
