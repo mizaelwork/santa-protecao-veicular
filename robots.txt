@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://protecaoveicularsanta.com.br/sitemap.xml

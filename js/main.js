@@ -95,6 +95,7 @@ function montarUrlObrigado(eventId, nome, telefone, extras = {}) {
     telefone,
     lead_simulador: true,
     veiculo: extras.veiculo || undefined,
+    placa: extras.placa || undefined,
     opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined,
     tracking: montarTrackingObrigado(),
     sessao_id: typeof sessao === 'object' ? sessao.id : undefined,
@@ -131,6 +132,7 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) 
     nome: nome || undefined,
     telefone: telefone || undefined,
     veiculo: extras.veiculo || undefined,
+    placa: extras.placa || undefined,
     opcionais: extras.opcionais && extras.opcionais.length ? extras.opcionais : undefined
   });
 
@@ -386,13 +388,25 @@ function aplicarMascaraTelefone(input) {
   });
 }
 
+/* ---------- PLACA OPCIONAL ---------- */
+function aplicarMascaraPlaca(input) {
+  if (!input) return;
+
+  input.addEventListener('input', (e) => {
+    e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 7);
+  });
+}
+
 
 /* ---------- SIMULADOR DO HERO ---------- */
 function inicializarSimuladorHero() {
   const options = document.querySelectorAll('.selector-option');
   const nomeInput = document.getElementById('heroNomeInput');
   const telefoneInput = document.getElementById('heroTelefoneInput');
+  const placaInput = document.getElementById('heroPlacaInput');
   const simularBtn = document.getElementById('heroSimularBtn');
+
+  aplicarMascaraPlaca(placaInput);
   
   let veiculoSelecionado = 'Carro'; // valor padrão
 
@@ -410,6 +424,7 @@ function inicializarSimuladorHero() {
       
       const nome = nomeInput ? nomeInput.value.trim() : '';
       const telefone = telefoneInput ? telefoneInput.value.trim() : '';
+      const placa = placaInput ? placaInput.value.trim() : '';
 
       if (nome.length < 2) {
         alert('Por favor, digite o seu nome para continuar.');
@@ -428,7 +443,8 @@ function inicializarSimuladorHero() {
 
       const origemSimulacao = `Simulador_Hero_${veiculoSelecionado}`;
       const { eventId, capiPromise } = trackLead(origemSimulacao, nome, telefone, {
-        veiculo: veiculoSelecionado
+        veiculo: veiculoSelecionado,
+        placa
       });
 
       capiPromise.then((ok) => {
@@ -439,6 +455,7 @@ function inicializarSimuladorHero() {
 
         window.location.assign(montarUrlObrigado(eventId, nome, telefone, {
           veiculo: veiculoSelecionado,
+          placa,
           origemSimulacao
         }));
       });
@@ -543,6 +560,14 @@ function inicializarMenuMobile() {
   const navbar = document.getElementById('navbar-v2');
   const hamburger = document.getElementById('hamburger-v2');
   const navLinks = document.getElementById('navLinks-v2');
+  const body = document.body;
+
+  function setMenuState(open) {
+    navLinks?.classList.toggle('open', open);
+    hamburger?.classList.toggle('active', open);
+    body.classList.toggle('menu-open', open);
+    hamburger?.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
 
   window.addEventListener('scroll', () => {
     if (navbar) {
@@ -551,15 +576,26 @@ function inicializarMenuMobile() {
   });
 
   hamburger?.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-    hamburger.classList.toggle('active');
+    const vaiAbrir = !navLinks?.classList.contains('open');
+    setMenuState(vaiAbrir);
   });
 
   navLinks?.querySelectorAll('a').forEach(a => {
     a.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      hamburger.classList.remove('active');
+      setMenuState(false);
     });
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      setMenuState(false);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      setMenuState(false);
+    }
   });
 }
 
