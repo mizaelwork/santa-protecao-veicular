@@ -343,6 +343,11 @@ function inicializarReveal() {
   const elementos = document.querySelectorAll('.reveal');
   if (!elementos.length) return;
 
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    elementos.forEach((elemento) => elemento.classList.add('is-visible'));
+    return;
+  }
+
   const observer = new IntersectionObserver((entradas) => {
     entradas.forEach((entrada) => {
       if (!entrada.isIntersecting) return;
