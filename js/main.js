@@ -121,6 +121,32 @@ function rastrearPageView() {
   }, 1500);
 }
 
+function gerarEventId() {
+  return (window.crypto && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function rastrearEvento(nome, dados = {}) {
+  if (typeof fbq === 'function') {
+    fbq('trackCustom', nome, dados);
+  }
+}
+
+function rastrearVisualizacaoConteudo() {
+  const eventId = gerarEventId();
+  const dados = { content_name: 'Landing de cotação', content_category: 'Proteção veicular' };
+
+  if (typeof fbq === 'function') {
+    fbq('track', 'ViewContent', dados, { eventID: eventId });
+  }
+
+  // Também registra no servidor para manter a leitura quando o navegador bloquear o Pixel.
+  setTimeout(() => {
+    enviarCapi({ event_name: 'ViewContent', event_id: eventId, ...dados });
+  }, 1700);
+}
+
 function fonteDaVisita(tracking) {
   const source = (tracking.utm_source || '').toLowerCase();
   if (tracking.gclid || tracking.gbraid || tracking.wbraid || source === 'google') return 'google';
@@ -219,9 +245,8 @@ function enviarSessao() {
 }
 
 function trackLead(nome, telefone, veiculo) {
-  const eventId = (window.crypto && crypto.randomUUID)
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const eventId = gerarEventId();
+  const origemFormulario = `Formulario_Direto_${veiculo}`;
 
   sessao.virouLead = true;
 
@@ -239,6 +264,9 @@ function trackLead(nome, telefone, veiculo) {
       event_name: 'Lead',
       event_id: eventId,
       lead_formulario: true,
+      // O endpoint de conversões já usa essa origem desde o simulador anterior.
+      lead_simulador: origemFormulario,
+      origem_simulacao: origemFormulario,
       nome,
       telefone,
       veiculo
@@ -281,6 +309,7 @@ function inicializarSeletorVeiculo() {
         item.classList.toggle('is-active', ativo);
         item.setAttribute('aria-pressed', ativo ? 'true' : 'false');
       });
+      rastrearEvento('SelecionouTipoVeiculo', { tipo_veiculo: tipoSelecionado });
     });
   });
 
@@ -301,6 +330,15 @@ function inicializarFormulario() {
   const obterVeiculo = inicializarSeletorVeiculo();
 
   aplicarMascaraTelefone(telefoneInput);
+
+  let formularioIniciado = false;
+  [nomeInput, telefoneInput].forEach((campo) => {
+    campo?.addEventListener('focus', () => {
+      if (formularioIniciado) return;
+      formularioIniciado = true;
+      rastrearEvento('IniciouFormularioCotacao', { formulario: 'cotacao_direta' });
+    }, { once: true });
+  });
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -378,15 +416,39 @@ function inicializarVideoSobDemanda() {
     video.src = src;
 
     acionador.replaceWith(video);
+    rastrearEvento('AssistiuDepoimentoVideo', { conteudo: 'indenizacao_em_2_dias' });
     video.play().catch(() => {});
+  }, { once: true });
+}
+
+function inicializarEngajamentoPagina() {
+  const marcosScroll = new Set();
+  const registrarMarco = () => {
+    const altura = document.documentElement.scrollHeight - window.innerHeight;
+    if (altura <= 0) return;
+    const percentual = Math.round((window.scrollY / altura) * 100);
+
+    [25, 50, 75, 90].forEach((marco) => {
+      if (percentual < marco || marcosScroll.has(marco)) return;
+      marcosScroll.add(marco);
+      rastrearEvento('LeituraDaPagina', { percentual_leitura: marco });
+    });
+  };
+
+  window.addEventListener('scroll', registrarMarco, { passive: true });
+
+  document.querySelector('.map-link')?.addEventListener('click', () => {
+    rastrearEvento('InteragiuComMapa', { localizacao: 'ingleses_florianopolis' });
   }, { once: true });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   coletarTracking();
   rastrearPageView();
+  rastrearVisualizacaoConteudo();
   iniciarMedicaoSessao();
   inicializarFormulario();
   inicializarReveal();
   inicializarVideoSobDemanda();
+  inicializarEngajamentoPagina();
 });
