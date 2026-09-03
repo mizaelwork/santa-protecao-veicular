@@ -288,9 +288,9 @@ function enviarLeadServidor(nome, telefone, veiculo) {
 
   return {
     eventId,
-    capiPromise: enviarCapi(dadosLead),
-    // A Gestão é responsável pelo registro operacional e aviso no Telegram.
-    gestaoPromise: enviarLeadParaGestao(dadosLead)
+    // A Gestão é a única CAPI do Lead: registra a operação, avisa o Telegram
+    // e evita uma segunda cópia server-side da mesma conversão na Meta.
+    capiPromise: enviarLeadParaGestao(dadosLead)
   };
 }
 
