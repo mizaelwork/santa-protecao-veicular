@@ -1,5 +1,6 @@
 // Mantém o rastreamento no mesmo projeto do site e no Pixel configurado na Vercel.
 const CAPI_ENDPOINT = '/api/capi';
+const GESTAO_LEAD_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
 const SESSAO_ENDPOINT = 'https://gestao.angelcode.com.br/api/site/sessao';
 const OBRIGADO_URL = `${window.location.origin}/obrigado`;
 
@@ -95,18 +96,37 @@ function getCookie(name) {
   return match ? decodeURIComponent(match[1]) : undefined;
 }
 
+function montarDadosEvento(dados) {
+  return Object.assign({
+    event_source_url: window.location.href,
+    fbp: getCookie('_fbp'),
+    fbc: getCookie('_fbc'),
+    tracking: coletarTracking()
+  }, dados);
+}
+
 function enviarCapi(dados) {
   try {
     return fetch(CAPI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       keepalive: true,
-      body: JSON.stringify(Object.assign({
-        event_source_url: window.location.href,
-        fbp: getCookie('_fbp'),
-        fbc: getCookie('_fbc'),
-        tracking: coletarTracking()
-      }, dados))
+      body: JSON.stringify(montarDadosEvento(dados))
+    })
+      .then((response) => response.ok)
+      .catch(() => false);
+  } catch (_) {
+    return Promise.resolve(false);
+  }
+}
+
+function enviarLeadParaGestao(dados) {
+  try {
+    return fetch(GESTAO_LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify(montarDadosEvento(dados))
     })
       .then((response) => response.ok)
       .catch(() => false);
@@ -252,22 +272,25 @@ function enviarSessao() {
 function enviarLeadServidor(nome, telefone, veiculo) {
   const eventId = gerarEventId();
   const origemFormulario = `Formulario_Direto_${veiculo}`;
+  const dadosLead = {
+    event_name: 'Lead',
+    event_id: eventId,
+    lead_formulario: true,
+    // O endpoint de conversões já usa essa origem desde o simulador anterior.
+    lead_simulador: origemFormulario,
+    origem_simulacao: origemFormulario,
+    nome,
+    telefone,
+    veiculo
+  };
 
   sessao.virouLead = true;
 
   return {
     eventId,
-    capiPromise: enviarCapi({
-      event_name: 'Lead',
-      event_id: eventId,
-      lead_formulario: true,
-      // O endpoint de conversões já usa essa origem desde o simulador anterior.
-      lead_simulador: origemFormulario,
-      origem_simulacao: origemFormulario,
-      nome,
-      telefone,
-      veiculo
-    })
+    capiPromise: enviarCapi(dadosLead),
+    // A Gestão é responsável pelo registro operacional e aviso no Telegram.
+    gestaoPromise: enviarLeadParaGestao(dadosLead)
   };
 }
 
