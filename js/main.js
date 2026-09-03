@@ -128,12 +128,6 @@ function gerarEventId() {
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function rastrearEvento(nome, dados = {}) {
-  if (typeof fbq === 'function') {
-    fbq('trackCustom', nome, dados);
-  }
-}
-
 function rastrearVisualizacaoConteudo() {
   const eventId = gerarEventId();
   const dados = { content_name: 'Landing de cotação', content_category: 'Proteção veicular' };
@@ -310,7 +304,6 @@ function inicializarSeletorVeiculo() {
         item.classList.toggle('is-active', ativo);
         item.setAttribute('aria-pressed', ativo ? 'true' : 'false');
       });
-      rastrearEvento('SelecionouTipoVeiculo', { tipo_veiculo: tipoSelecionado });
     });
   });
 
@@ -331,15 +324,6 @@ function inicializarFormulario() {
   const obterVeiculo = inicializarSeletorVeiculo();
 
   aplicarMascaraTelefone(telefoneInput);
-
-  let formularioIniciado = false;
-  [nomeInput, telefoneInput].forEach((campo) => {
-    campo?.addEventListener('focus', () => {
-      if (formularioIniciado) return;
-      formularioIniciado = true;
-      rastrearEvento('IniciouFormularioCotacao', { formulario: 'cotacao_direta' });
-    }, { once: true });
-  });
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
@@ -417,29 +401,7 @@ function inicializarVideoSobDemanda() {
     video.src = src;
 
     acionador.replaceWith(video);
-    rastrearEvento('AssistiuDepoimentoVideo', { conteudo: 'indenizacao_em_2_dias' });
     video.play().catch(() => {});
-  }, { once: true });
-}
-
-function inicializarEngajamentoPagina() {
-  const marcosScroll = new Set();
-  const registrarMarco = () => {
-    const altura = document.documentElement.scrollHeight - window.innerHeight;
-    if (altura <= 0) return;
-    const percentual = Math.round((window.scrollY / altura) * 100);
-
-    [25, 50, 75, 90].forEach((marco) => {
-      if (percentual < marco || marcosScroll.has(marco)) return;
-      marcosScroll.add(marco);
-      rastrearEvento('LeituraDaPagina', { percentual_leitura: marco });
-    });
-  };
-
-  window.addEventListener('scroll', registrarMarco, { passive: true });
-
-  document.querySelector('.map-link')?.addEventListener('click', () => {
-    rastrearEvento('InteragiuComMapa', { localizacao: 'ingleses_florianopolis' });
   }, { once: true });
 }
 
@@ -451,5 +413,4 @@ document.addEventListener('DOMContentLoaded', () => {
   inicializarFormulario();
   inicializarReveal();
   inicializarVideoSobDemanda();
-  inicializarEngajamentoPagina();
 });
