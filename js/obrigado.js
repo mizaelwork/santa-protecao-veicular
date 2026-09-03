@@ -1,5 +1,5 @@
 const WA_NUMERO = '554888533236';
-const CAPI_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
+const CAPI_ENDPOINT = '/api/capi';
 
 function gerarId(prefixo) {
   return `${prefixo}:${crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`}`;

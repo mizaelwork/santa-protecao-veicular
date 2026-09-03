@@ -1,4 +1,5 @@
-const CAPI_ENDPOINT = 'https://gestao.angelcode.com.br/api/capi';
+// Mantém o rastreamento no mesmo projeto do site e no Pixel configurado na Vercel.
+const CAPI_ENDPOINT = '/api/capi';
 const SESSAO_ENDPOINT = 'https://gestao.angelcode.com.br/api/site/sessao';
 const OBRIGADO_URL = `${window.location.origin}/obrigado`;
 
