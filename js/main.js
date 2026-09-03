@@ -158,20 +158,6 @@ function gerarEventId() {
     : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function rastrearVisualizacaoConteudo() {
-  const eventId = gerarEventId();
-  const dados = { content_name: 'Landing de cotação', content_category: 'Proteção veicular' };
-
-  if (typeof fbq === 'function') {
-    fbq('track', 'ViewContent', dados, { eventID: eventId });
-  }
-
-  // Também registra no servidor para manter a leitura quando o navegador bloquear o Pixel.
-  setTimeout(() => {
-    enviarCapi({ event_name: 'ViewContent', event_id: eventId, ...dados });
-  }, 1700);
-}
-
 function fonteDaVisita(tracking) {
   const source = (tracking.utm_source || '').toLowerCase();
   if (tracking.gclid || tracking.gbraid || tracking.wbraid || source === 'google') return 'google';
@@ -448,7 +434,6 @@ function inicializarVideoSobDemanda() {
 document.addEventListener('DOMContentLoaded', () => {
   coletarTracking();
   rastrearPageView();
-  rastrearVisualizacaoConteudo();
   iniciarMedicaoSessao();
   inicializarFormulario();
   inicializarReveal();
