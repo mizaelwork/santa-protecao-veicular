@@ -239,19 +239,11 @@ function enviarSessao() {
   } catch (_) {}
 }
 
-function trackLead(nome, telefone, veiculo) {
+function enviarLeadServidor(nome, telefone, veiculo) {
   const eventId = gerarEventId();
   const origemFormulario = `Formulario_Direto_${veiculo}`;
 
   sessao.virouLead = true;
-
-  if (typeof fbq === 'function') {
-    fbq('track', 'Lead', {}, { eventID: eventId });
-  }
-
-  if (typeof gtag === 'function') {
-    gtag('event', 'conversion', { send_to: 'AW-10777457819/kzoICKrK0b8cEJvpi5Mo' });
-  }
 
   return {
     eventId,
@@ -267,6 +259,16 @@ function trackLead(nome, telefone, veiculo) {
       veiculo
     })
   };
+}
+
+function dispararLeadNoNavegador(eventId) {
+  if (typeof fbq === 'function') {
+    fbq('track', 'Lead', {}, { eventID: eventId });
+  }
+
+  if (typeof gtag === 'function') {
+    gtag('event', 'conversion', { send_to: 'AW-10777457819/kzoICKrK0b8cEJvpi5Mo' });
+  }
 }
 
 function aplicarMascaraTelefone(input) {
@@ -348,7 +350,7 @@ function inicializarFormulario() {
     if (submitBtn?.dataset.loading === '1') return;
     travarBotao(submitBtn, true);
 
-    const { eventId, capiPromise } = trackLead(nome, telefone, veiculo);
+    const { eventId, capiPromise } = enviarLeadServidor(nome, telefone, veiculo);
 
     capiPromise.then((ok) => {
       if (!ok) {
@@ -357,7 +359,12 @@ function inicializarFormulario() {
         return;
       }
 
-      window.location.assign(montarUrlObrigado(eventId, nome, telefone, veiculo));
+      // A confirmação da CAPI vem primeiro; este intervalo evita que a navegação
+      // interrompa o beacon do Pixel antes de o navegador enviá-lo à Meta.
+      dispararLeadNoNavegador(eventId);
+      setTimeout(() => {
+        window.location.assign(montarUrlObrigado(eventId, nome, telefone, veiculo));
+      }, 500);
     });
   });
 }
