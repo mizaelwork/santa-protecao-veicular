@@ -48,7 +48,6 @@ function enviarEvento(eventName, eventId, payload) {
 }
 
 const payload = lerPayload();
-enviarEvento('CompleteRegistration', gerarId('complete-registration'), payload);
 
 const whatsappButton = document.getElementById('whatsapp-button');
 const mensagem = payload?.veiculo
