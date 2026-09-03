@@ -115,6 +115,16 @@ function enviarCapi(dados) {
   }
 }
 
+function aguardarCapiOuContinuar(capiPromise) {
+  return Promise.race([
+    capiPromise.then((ok) => ({ ok, excedeuLimite: false })),
+    new Promise((resolve) => {
+      // Em redes móveis lentas, o keepalive continua enviando sem prender o lead na tela.
+      setTimeout(() => resolve({ ok: true, excedeuLimite: true }), 1200);
+    })
+  ]);
+}
+
 function rastrearPageView() {
   if (!window.__pageViewId) return;
   setTimeout(() => {
@@ -352,19 +362,19 @@ function inicializarFormulario() {
 
     const { eventId, capiPromise } = enviarLeadServidor(nome, telefone, veiculo);
 
-    capiPromise.then((ok) => {
+    aguardarCapiOuContinuar(capiPromise).then(({ ok }) => {
       if (!ok) {
         alert('Não conseguimos concluir o envio agora. Tente novamente em alguns instantes.');
         travarBotao(submitBtn, false);
         return;
       }
 
-      // A confirmação da CAPI vem primeiro; este intervalo evita que a navegação
-      // interrompa o beacon do Pixel antes de o navegador enviá-lo à Meta.
+      // Após a confirmação, ou no limite de rede lenta, aguarda o beacon do Pixel
+      // iniciar antes de redirecionar.
       dispararLeadNoNavegador(eventId);
       setTimeout(() => {
         window.location.assign(montarUrlObrigado(eventId, nome, telefone, veiculo));
-      }, 500);
+      }, 180);
     });
   });
 }
