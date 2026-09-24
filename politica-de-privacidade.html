@@ -214,7 +214,7 @@
             <li><strong>Dados técnicos e de navegação:</strong> endereço IP, agente do navegador, URL acessada, cookies _fbp/_fbc e identificadores de campanha presentes na visita;</li>
             <li><strong>Dados de comunicação e integração:</strong> número de telefone, conteúdo e metadados das mensagens processadas pela integração WhatsApp, conforme a configuração e o uso de cada cliente.</li>
           </ul>
-          <p>No formulário público da Santa, o código do site encaminha nome, telefone, tipo de veículo, placa e opcionais preenchidos, além da origem da simulação e dados de campanha, ao endpoint CAPI do Gestão PV para registrar e encaminhar o lead à operação. O endpoint também envia à Meta eventos de visita e conversão com identificador do evento, URL de origem e, conforme disponíveis, IP, agente do navegador e cookies _fbp/_fbc. O Pixel do navegador registra PageView e Lead; o Google Ads recebe um evento de conversão no clique correspondente. Esses dados de medição têm finalidade de atribuição e mensuração de campanhas. O código do site não envia nome, telefone ou placa no payload de evento da Meta.</p>
+          <p>No formulário da Santa, nome, telefone, dados do veículo e informações da solicitação são encaminhados ao Gestão PV para atendimento. Em eventos enviados à Meta pela API de Conversões, podem ser transmitidos identificadores de navegação, IP, dados do evento e hashes SHA-256 do nome e do telefone para correspondência do evento. A placa não integra esse evento da Meta. O Gestão PV também registra dados do formulário e pode enviar ao Telegram notificações operacionais com dados do pedido. O site utiliza Pixel da Meta e medição de conversões do Google Ads.</p>
           <p>Não envie dados além dos necessários ao atendimento solicitado. O cliente que pede uma informação deve explicar quando ela for necessária.</p>
         </div>
         <hr class="policy-divider" />
@@ -246,25 +246,26 @@
           <ul>
             <li>entre o usuário e a empresa ou escritório que presta o atendimento solicitado;</li>
             <li>entre os sistemas do cliente e a AngelCode, para operar e dar suporte ao serviço contratado;</li>
-            <li>com a Meta/WhatsApp, para autenticar, transportar e operar mensagens pela plataforma oficial e para receber eventos do Pixel/CAPI do site, conforme descrito acima;</li>
-            <li>com o serviço de CRM Gestão PV, por meio do endpoint CAPI do site, para receber os dados do lead enviados no formulário e encaminhá-los à operação de atendimento;</li>
-            <li>com o Google Ads, que recebe o evento de conversão configurado no site para mensuração de campanhas;</li>
+            <li>com Gestão PV/Supabase, na operação Santa/Gestão PV, para registro e atendimento dos leads e operação do CRM;</li>
+            <li>com Meta/WhatsApp, para operação da API oficial e tratamento de mensagens e eventos de medição, conforme o fluxo utilizado;</li>
+            <li>com Google Ads, para medição de conversões de campanhas, e com Telegram, para notificações operacionais do formulário;</li>
+            <li>com Google Gemini, quando recursos de IA do Gestão PV estiverem habilitados, para processamento de conteúdo de conversas e mídias;</li>
             <li>com autoridades, quando houver obrigação legal válida.</li>
           </ul>
-          <p>Os documentos e configurações disponíveis não permitem confirmar aqui uma lista completa de operadores de hospedagem, suporte ou suboperadores. Essa lista deve ser confirmada pelo responsável antes da publicação.</p>
+          <p>O site público da Santa é hospedado em VPS administrada por Mizael/AngelCode. Na operação Santa/Gestão PV, os dados são tratados no contexto da proteção veicular e do atendimento correspondente. No Jurisfera, cada escritório cliente define as finalidades e os dados do atendimento jurídico de seus próprios clientes; Mizael/AngelCode fornece a tecnologia. O uso do mesmo aplicativo Meta não torna os dados de um escritório dados da Santa ou do Gestão PV.</p>
         </div>
         <hr class="policy-divider" />
 
         <div class="policy-section" id="retencao">
           <h2>6. Retenção e eliminação</h2>
-          <p>Os prazos de retenção de leads, mensagens, dados do CRM e registros técnicos ainda precisam ser confirmados para cada serviço. A entidade responsável por cada operação deve documentar os critérios aplicados e observar as obrigações pertinentes. Até essa confirmação, esta página não promete um prazo específico.</p>
+          <p>Os períodos de conservação variam conforme a finalidade, a categoria dos dados, a relação com a empresa ou escritório responsável e eventuais obrigações legais. Não há um prazo único para leads, conversas, mídias e registros de medição. Atualmente, não existe uma rotina automática única que elimine esses dados de todos os sistemas ao mesmo tempo. Solicitações de acesso ou exclusão devem ser encaminhadas pelos canais de contato desta política à empresa ou ao escritório responsável pelo atendimento; cada solicitação será analisada nos sistemas envolvidos, observadas as hipóteses legais de conservação. Dados mantidos por plataformas externas seguem também os procedimentos e políticas dessas plataformas.</p>
           <p>Para dados tratados em uma operação de cliente, o pedido de eliminação ou outra providência deve ser encaminhado à empresa ou ao escritório que presta o atendimento. A AngelCode pode apoiar solicitações relativas aos dados sob sua operação tecnológica, observados os ajustes com o cliente e as obrigações aplicáveis.</p>
         </div>
         <hr class="policy-divider" />
 
         <div class="policy-section" id="seguranca">
           <h2>7. Segurança</h2>
-          <p>As medidas técnicas e administrativas efetivamente implementadas, os controles, os responsáveis por incidentes e os procedimentos de comunicação ainda precisam ser confirmados para cada serviço antes da publicação final. Cada participante deve aplicar medidas compatíveis com sua operação e com as obrigações pertinentes. Nenhuma tecnologia elimina todos os riscos, e esta página não representa certificação ou garantia absoluta de segurança.</p>
+          <p>O site público é servido por Nginx em VPS administrada por Mizael/AngelCode e possui cabeçalhos de segurança configurados. O projeto do Gestão PV inclui validação de requisições e limites para rotas de eventos e sessões, além de regras de acesso aos dados por perfil. Essas medidas reduzem riscos, mas não representam garantia absoluta de segurança. Esta política não afirma controles da VPS, backups ou criptografia em repouso que não tenham sido verificados.</p>
         </div>
         <hr class="policy-divider" />
 
