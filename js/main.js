@@ -139,6 +139,33 @@ function trackLead(origemSimulacao = '', nome = '', telefone = '', extras = {}) 
   return { eventId, capiPromise };
 }
 
+/**
+ * Clique em botão de WhatsApp sem formulário. Antes disparava `Lead` e se misturava com quem
+ * preencheu o formulário — a campanha não tinha como distinguir intenção de cadastro.
+ * Mantém a conversão do Google Ads ("Clique WhatsApp"), que é exatamente este clique.
+ */
+function trackContatoWhatsapp(origem = '') {
+  const eventId = (crypto.randomUUID && crypto.randomUUID()) ||
+    (Date.now() + '-' + Math.random().toString(16).slice(2));
+
+  if (typeof sessao === 'object') sessao.virouLead = true;
+
+  if (typeof fbq === 'function') {
+    fbq('track', 'Contact', {}, { eventID: eventId });
+  }
+
+  if (typeof gtag === 'function') {
+    gtag('event', 'conversion', { send_to: 'AW-10777457819/kzoICKrK0b8cEJvpi5Mo' });
+  }
+
+  enviarCapi({
+    event_name: 'Contact',
+    event_id: eventId,
+    origem_contato: 'site_button',
+    lead_simulador: origem || undefined
+  });
+}
+
 /* ---------- MEDIÇÃO DA VISITA (performance + engajamento) ---------- */
 // Uma linha por visita no nosso banco, enviada na saída. Serve para responder por que quem não
 // pediu cotação foi embora: se o site demorou a abrir (problema de velocidade) ou se abriu rápido
@@ -336,7 +363,9 @@ document.addEventListener('DOMContentLoaded', () => {
     el.setAttribute('href', criarLinkWhatsapp(obterMensagemPadrao()));
     el.setAttribute('target', '_blank');
     el.setAttribute('rel', 'noopener noreferrer');
-    el.addEventListener('click', () => trackLead('CTA_Padrao'));
+    // Clique direto no WhatsApp não é formulário: vira `Contact`. O `Lead` fica reservado a quem
+    // preencheu nome + telefone, que é o sinal com que a campanha deve otimizar.
+    el.addEventListener('click', () => trackContatoWhatsapp('CTA_Padrao'));
   });
 
   // 3. SIMULADOR DO HERO
